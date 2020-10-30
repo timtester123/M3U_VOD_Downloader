@@ -17,6 +17,7 @@ Public Class Form1
 
         'load settings
         load_settings()
+        '
 
     End Sub
 
