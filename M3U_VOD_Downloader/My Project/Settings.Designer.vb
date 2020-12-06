@@ -57,12 +57,12 @@ Namespace My
         <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
          Global.System.Configuration.DefaultSettingValueAttribute("")>  _
-        Public Property MU() As String
+        Public Property DownloadPath() As String
             Get
-                Return CType(Me("MU"),String)
+                Return CType(Me("DownloadPath"),String)
             End Get
             Set
-                Me("MU") = value
+                Me("DownloadPath") = value
             End Set
         End Property
         

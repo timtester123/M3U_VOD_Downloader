@@ -5,7 +5,7 @@ Imports System.Net
 Public Class Form1
 
 
-    Dim local_M3U As String
+    Public local_M3U As String = Path.GetTempPath() & "\M3U.m3u"
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
 
@@ -29,16 +29,21 @@ Public Class Form1
     End Sub
 
     Private Sub save_settings()
-        My.Settings.MU = TextBox_M3U.Text
         My.Settings.M3U_URL = TextBox_M3U_URL.Text
+        My.Settings.DownloadPath = TextBox_Download_Path.Text
+
         My.Settings.Save()
     End Sub
     Private Sub load_settings()
-        Dim File As String = My.Settings.MU
-        TextBox_M3U.Text = File
         Dim M3U_URL As String = My.Settings.M3U_URL
         TextBox_M3U_URL.Text = M3U_URL
+        Dim DownloadPath As String = My.Settings.DownloadPath
 
+        If DownloadPath = "" Then
+            TextBox_Download_Path.Text = Application.StartupPath()
+        Else
+            TextBox_Download_Path.Text = DownloadPath
+        End If
 
         load_m3u()
 
@@ -53,14 +58,10 @@ Public Class Form1
         CheckedListBox.Items.Clear()
         CheckedListBox_Backup.Items.Clear()
 
-
         If TextBox_M3U_URL.Text <> "" Then
             M3U_URL_Download(TextBox_M3U_URL.Text)
-            TextBox_M3U.Text = ""
         End If
-        If TextBox_M3U.Text <> "" Then
-            fill_ListBox(TextBox_M3U.Text)
-        End If
+
     End Sub
 
 
@@ -71,9 +72,7 @@ Public Class Form1
             '    MsgBox("Please use the m3u_plus file!")
             '    Exit Sub
             'End If
-            local_M3U = Application.StartupPath() & "\Downloads\WatchHD.m3u"
             M3U_downloader = New WebClient
-            My.Computer.FileSystem.CreateDirectory(Application.StartupPath() & "\Downloads")
             M3U_downloader.DownloadFileAsync(New Uri(M3U_URL), local_M3U, Stopwatch.StartNew)
         End If
     End Sub
@@ -85,39 +84,22 @@ Public Class Form1
         Label_status.Text = "Downloading M3U    " & e.ProgressPercentage & " %" & "    " & Math.Round(e.BytesReceived / 1000000, 2) & " MB / " & Math.Round(e.TotalBytesToReceive / 1000000, 2) & " MB" & "    " & (e.BytesReceived / (DirectCast(e.UserState, Stopwatch).ElapsedMilliseconds / 1000) / (1024 * 1024)).ToString("0.000 MB/s")
     End Sub
     Private Sub M3U_downloader_client_DownloadCompleted() Handles M3U_downloader.DownloadFileCompleted
-        fill_ListBox(local_M3U)
+        fill_ListBox()
         Label_status.Text = "Downloading M3U complete"
+        fill_ListBox()
     End Sub
 
-    Private Sub Button_M3U_Click(sender As Object, e As EventArgs) Handles Button_M3U.Click
-        OpenFileDialog1.InitialDirectory = Application.StartupPath
-        OpenFileDialog1.Filter = "m3u (*.m3u)|*.m3u|All files (*.*)|*.*"
-        OpenFileDialog1.FilterIndex = 1
-        OpenFileDialog1.RestoreDirectory = True
-        OpenFileDialog1.ShowDialog()
-        Dim File As String = OpenFileDialog1.FileName 'M3U auslesen
-        TextBox_M3U.Text = File
 
-
-        'Listbox füllen
-        fill_ListBox(File)
-
-        save_settings()
-
-        TextBox_M3U_URL.Text = ""
-
-
-    End Sub
 
 
     Dim URLs As New List(Of String)
     Dim Namen As New List(Of String)
-    Private Sub fill_ListBox(ByVal file As String)
+    Private Sub fill_ListBox()
 
 
-        If (My.Computer.FileSystem.FileExists(file)) Then
+        If (My.Computer.FileSystem.FileExists(local_M3U)) Then
 
-            Dim FileText As String = My.Computer.FileSystem.ReadAllText(file).Replace(vbCr, "")
+            Dim FileText As String = My.Computer.FileSystem.ReadAllText(local_M3U).Replace(vbCr, "")
             If FileText.ToLower.Contains("tvg-id=""") = False Then 'check if M3U Plus
                 MsgBox("Please use the m3u_plus file!", MsgBoxStyle.Critical)
                 Exit Sub
@@ -154,7 +136,6 @@ Public Class Form1
                 End If
             Next
         Else
-            TextBox_M3U.Text = ""
             MsgBox("The file doesn't exists!")
         End If
 
@@ -181,7 +162,13 @@ Public Class Form1
     Private Sub Button_Download_Click(sender As Object, e As EventArgs) Handles Button_Download.Click
 
 
+
         If Button_Download.Text = "Download" Then
+
+            If My.Computer.FileSystem.DirectoryExists(TextBox_Download_Path.Text) = False Then
+                MsgBox("Please check the download path: " & TextBox_Download_Path.Text)
+                Exit Sub
+            End If
 
             If (CheckedListBox.CheckedItems.Count > 0) Then
                 Button_Download.Text = "Cancel"
@@ -191,9 +178,9 @@ Public Class Form1
                     For x = 0 To Namen.Count - 1
                         If Namen(x) = name Then
                             Dim url As String = URLs(x)
-                            Dim folder As String = Application.StartupPath() & "\Downloads\" & name
+                            Dim folder As String = TextBox_Download_Path.Text & "\" & name
                             My.Computer.FileSystem.CreateDirectory(folder)
-                            Dim DownloadFile As String = folder + "\" + name + Path.GetExtension(url)
+                            Dim DownloadFile As String = folder + "\" + RemoveIllegalFileNameChars(name, "") + Path.GetExtension(url)
                             Downloads_URLS.Add(url)
                             Downloads_DownloadFiles.Add(DownloadFile)
                             Exit For
@@ -292,11 +279,14 @@ Public Class Form1
         Process.Start("https://timtester.in/donate/")
     End Sub
 
-    Private Sub VisitWatchHDtoToolStripMenuItem_Click(sender As Object, e As EventArgs)
-        Process.Start("https://watchhd.to/signup?friend=8487")
-    End Sub
+
 
     Private Sub CheckForUpdateToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles CheckForUpdateToolStripMenuItem.Click
         check_for_update(False)
+    End Sub
+    Private Sub Button_choose_Download_path_Click(sender As Object, e As EventArgs) Handles Button_choose_Download_path.Click
+        FolderBrowserDialog_DownloadPath.ShowDialog()
+        Dim DownloadPath As String = FolderBrowserDialog_DownloadPath.SelectedPath
+        TextBox_Download_Path.Text = DownloadPath
     End Sub
 End Class
