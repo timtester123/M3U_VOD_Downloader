@@ -86,7 +86,6 @@ Public Class Form1
     Private Sub M3U_downloader_client_DownloadCompleted() Handles M3U_downloader.DownloadFileCompleted
         fill_ListBox()
         Label_status.Text = "Downloading M3U complete"
-        fill_ListBox()
     End Sub
 
 
@@ -232,6 +231,7 @@ Public Class Form1
 
         If Downloads_URLS.Count = 0 Then
             Label_status.Text = "Download complete"
+            Button_Download.Text = "Download"
         End If
     End Sub
 
