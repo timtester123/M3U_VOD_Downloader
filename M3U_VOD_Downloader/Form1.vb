@@ -212,10 +212,11 @@ Public Class Form1
                 downloader = New WebClient
                 downloader.DownloadFileAsync(New Uri(Downloads_URLS(0)), Downloads_DownloadFiles(0), Stopwatch.StartNew)
                 akt_file = Path.GetFileName(Downloads_DownloadFiles(0))
+                left_files = 0
             End If
 
             total_files = Downloads_URLS.Count
-            left_files = 0 + new_files
+
 
 
 
