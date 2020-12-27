@@ -163,37 +163,8 @@ Public Class Form1
 
 
         If Button_Download.Text = "Download" Then
-
-            If My.Computer.FileSystem.DirectoryExists(TextBox_Download_Path.Text) = False Then
-                MsgBox("Please check the download path: " & TextBox_Download_Path.Text)
-                Exit Sub
-            End If
-
-            If (CheckedListBox.CheckedItems.Count > 0) Then
-                Button_Download.Text = "Cancel"
-
-                For i = 0 To CheckedListBox.CheckedItems.Count - 1 'Selektierte Downloads 
-                    Dim name As String = CheckedListBox.CheckedItems(i).ToString()
-                    For x = 0 To Namen.Count - 1
-                        If Namen(x) = name Then
-                            Dim url As String = URLs(x)
-                            Dim folder As String = TextBox_Download_Path.Text & "\" & name
-                            My.Computer.FileSystem.CreateDirectory(folder)
-                            Dim DownloadFile As String = folder + "\" + RemoveIllegalFileNameChars(name, "") + Path.GetExtension(url)
-                            Downloads_URLS.Add(url)
-                            Downloads_DownloadFiles.Add(DownloadFile)
-                            Exit For
-                        End If
-                    Next
-                Next
-
-                downloader = New WebClient
-                downloader.DownloadFileAsync(New Uri(Downloads_URLS(0)), Downloads_DownloadFiles(0), Stopwatch.StartNew)
-                total_files = Downloads_URLS.Count
-                left_files = 0
-                akt_file = Path.GetFileName(Downloads_DownloadFiles(0))
-
-            End If
+            'Start download
+            Download(False)
         Else
             For i = 0 To Downloads_URLS.Count - 1
                 Downloads_URLS.RemoveAt(0)
@@ -204,8 +175,60 @@ Public Class Form1
             downloader.CancelAsync()
             downloader.Dispose()
             Button_Download.Text = "Download"
+            Button_to_queue.Enabled = False
+
         End If
 
+    End Sub
+
+
+    Private Sub Download(ByVal add As Boolean)
+        If My.Computer.FileSystem.DirectoryExists(TextBox_Download_Path.Text) = False Then
+            MsgBox("Please check the download path: " & TextBox_Download_Path.Text)
+            Exit Sub
+        End If
+
+        If (CheckedListBox.CheckedItems.Count > 0) Then
+            Button_Download.Text = "Cancel"
+
+            Dim new_files As Integer = 0
+            For i = 0 To CheckedListBox.CheckedItems.Count - 1 'Selektierte Downloads 
+                Dim name As String = CheckedListBox.CheckedItems(i).ToString()
+                For x = 0 To Namen.Count - 1
+                    If Namen(x) = name Then
+                        Dim url As String = URLs(x)
+                        Dim folder As String = TextBox_Download_Path.Text & "\" & name
+                        My.Computer.FileSystem.CreateDirectory(folder)
+                        Dim DownloadFile As String = folder + "\" + RemoveIllegalFileNameChars(name, "") + Path.GetExtension(url)
+                        Downloads_URLS.Add(url)
+                        Downloads_DownloadFiles.Add(DownloadFile)
+                        new_files = new_files + 1
+                        Exit For
+                    End If
+                Next
+            Next
+
+            If add = False Then 'only if new download
+                downloader = New WebClient
+                downloader.DownloadFileAsync(New Uri(Downloads_URLS(0)), Downloads_DownloadFiles(0), Stopwatch.StartNew)
+                akt_file = Path.GetFileName(Downloads_DownloadFiles(0))
+            End If
+
+            total_files = Downloads_URLS.Count
+            left_files = 0 + new_files
+
+
+
+
+            'Uncheck all
+            uncheck()
+
+        End If
+    End Sub
+
+    Private Sub Button_to_queue_Click(sender As Object, e As EventArgs) Handles Button_to_queue.Click
+        'Start download
+        Download(True)
     End Sub
 
 
@@ -232,6 +255,7 @@ Public Class Form1
         If Downloads_URLS.Count = 0 Then
             Label_status.Text = "Download complete"
             Button_Download.Text = "Download"
+            Button_to_queue.Enabled = False
         End If
     End Sub
 
@@ -244,6 +268,10 @@ Public Class Form1
     End Sub
 
     Private Sub Button_uncheck_Click(sender As Object, e As EventArgs) Handles Button_uncheck.Click
+        uncheck()
+    End Sub
+
+    Private Sub uncheck()
         For i = 0 To CheckedListBox.Items.Count - 1 'Selektierte Downloads 
             CheckedListBox.SetItemChecked(i, False)
         Next
@@ -289,4 +317,22 @@ Public Class Form1
         Dim DownloadPath As String = FolderBrowserDialog_DownloadPath.SelectedPath
         TextBox_Download_Path.Text = DownloadPath
     End Sub
+
+    Private Sub CheckedListBox_SelectedIndexChanged(sender As Object, e As EventArgs) Handles CheckedListBox.ItemCheck
+        Me.BeginInvoke(CType(Sub() ItemChecked(), MethodInvoker))
+    End Sub
+
+
+    Private Sub ItemChecked()
+
+        Dim check As Boolean = False
+        If Button_Download.Text = "Cancel" Then 'Download runs
+            If CheckedListBox.CheckedItems.Count > 0 Then
+                check = True 'enable add to queue
+            End If 'If a Item is checked
+        End If
+        Button_to_queue.Enabled = check
+
+    End Sub
+
 End Class

@@ -35,6 +35,7 @@ Partial Class Form1
         Me.Label_status = New System.Windows.Forms.Label()
         Me.ProgressBar1 = New System.Windows.Forms.ProgressBar()
         Me.GroupBox2 = New System.Windows.Forms.GroupBox()
+        Me.Button_to_queue = New System.Windows.Forms.Button()
         Me.Button_Play = New System.Windows.Forms.Button()
         Me.CheckedListBox_Backup = New System.Windows.Forms.CheckedListBox()
         Me.Button_uncheck = New System.Windows.Forms.Button()
@@ -54,9 +55,9 @@ Partial Class Form1
         'Button_Download
         '
         Me.Button_Download.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.25!)
-        Me.Button_Download.Location = New System.Drawing.Point(306, 51)
+        Me.Button_Download.Location = New System.Drawing.Point(217, 51)
         Me.Button_Download.Name = "Button_Download"
-        Me.Button_Download.Size = New System.Drawing.Size(254, 30)
+        Me.Button_Download.Size = New System.Drawing.Size(206, 30)
         Me.Button_Download.TabIndex = 1
         Me.Button_Download.Text = "Download"
         Me.Button_Download.UseVisualStyleBackColor = True
@@ -157,6 +158,7 @@ Partial Class Form1
         '
         'GroupBox2
         '
+        Me.GroupBox2.Controls.Add(Me.Button_to_queue)
         Me.GroupBox2.Controls.Add(Me.Button_Play)
         Me.GroupBox2.Controls.Add(Me.CheckedListBox_Backup)
         Me.GroupBox2.Controls.Add(Me.Button_uncheck)
@@ -170,6 +172,17 @@ Partial Class Form1
         Me.GroupBox2.Size = New System.Drawing.Size(684, 487)
         Me.GroupBox2.TabIndex = 3
         Me.GroupBox2.TabStop = False
+        '
+        'Button_to_queue
+        '
+        Me.Button_to_queue.Enabled = False
+        Me.Button_to_queue.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.25!)
+        Me.Button_to_queue.Location = New System.Drawing.Point(429, 51)
+        Me.Button_to_queue.Name = "Button_to_queue"
+        Me.Button_to_queue.Size = New System.Drawing.Size(131, 30)
+        Me.Button_to_queue.TabIndex = 10
+        Me.Button_to_queue.Text = "add to queue"
+        Me.Button_to_queue.UseVisualStyleBackColor = True
         '
         'Button_Play
         '
@@ -193,9 +206,9 @@ Partial Class Form1
         'Button_uncheck
         '
         Me.Button_uncheck.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.25!)
-        Me.Button_uncheck.Location = New System.Drawing.Point(158, 51)
+        Me.Button_uncheck.Location = New System.Drawing.Point(108, 51)
         Me.Button_uncheck.Name = "Button_uncheck"
-        Me.Button_uncheck.Size = New System.Drawing.Size(142, 30)
+        Me.Button_uncheck.Size = New System.Drawing.Size(103, 30)
         Me.Button_uncheck.TabIndex = 7
         Me.Button_uncheck.Text = "uncheck all"
         Me.Button_uncheck.UseVisualStyleBackColor = True
@@ -205,7 +218,7 @@ Partial Class Form1
         Me.Button_check_all.Font = New System.Drawing.Font("Microsoft Sans Serif", 12.25!)
         Me.Button_check_all.Location = New System.Drawing.Point(10, 51)
         Me.Button_check_all.Name = "Button_check_all"
-        Me.Button_check_all.Size = New System.Drawing.Size(142, 30)
+        Me.Button_check_all.Size = New System.Drawing.Size(92, 30)
         Me.Button_check_all.TabIndex = 6
         Me.Button_check_all.Text = "check all"
         Me.Button_check_all.UseVisualStyleBackColor = True
@@ -307,4 +320,5 @@ Partial Class Form1
     Friend WithEvents Label1 As Label
     Friend WithEvents TextBox_Download_Path As TextBox
     Friend WithEvents FolderBrowserDialog_DownloadPath As FolderBrowserDialog
+    Friend WithEvents Button_to_queue As Button
 End Class
