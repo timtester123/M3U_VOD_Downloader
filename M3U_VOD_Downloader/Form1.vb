@@ -73,6 +73,7 @@ Public Class Form1
             '    Exit Sub
             'End If
             M3U_downloader = New WebClient
+            M3U_downloader.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)")
             M3U_downloader.DownloadFileAsync(New Uri(M3U_URL), local_M3U, Stopwatch.StartNew)
         End If
     End Sub
@@ -99,6 +100,8 @@ Public Class Form1
         If (My.Computer.FileSystem.FileExists(local_M3U)) Then
 
             Dim FileText As String = My.Computer.FileSystem.ReadAllText(local_M3U).Replace(vbCr, "")
+
+
             If FileText.ToLower.Contains("tvg-id=""") = False Then 'check if M3U Plus
                 MsgBox("Please use the m3u_plus file!", MsgBoxStyle.Critical)
                 Exit Sub
@@ -210,6 +213,7 @@ Public Class Form1
 
             If add = False Then 'only if new download
                 downloader = New WebClient
+                downloader.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)")
                 downloader.DownloadFileAsync(New Uri(Downloads_URLS(0)), Downloads_DownloadFiles(0), Stopwatch.StartNew)
                 akt_file = Path.GetFileName(Downloads_DownloadFiles(0))
                 left_files = 0
