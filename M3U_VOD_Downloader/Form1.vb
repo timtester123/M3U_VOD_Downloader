@@ -246,22 +246,44 @@ Public Class Form1
         Label_status.Text = left_files & "/" & total_files & "    " & akt_file & "    " & e.ProgressPercentage & " %" & "    " & Math.Round(e.BytesReceived / 1000000, 2) & " MB / " & Math.Round(e.TotalBytesToReceive / 1000000, 2) & " MB" & "    " & (e.BytesReceived / (DirectCast(e.UserState, Stopwatch).ElapsedMilliseconds / 1000) / (1024 * 1024)).ToString("0.000 MB/s")
 
     End Sub
+
+    Dim TryAgain As Boolean = False
+
     Private Sub client_DownloadCompleted() Handles downloader.DownloadFileCompleted
-        left_files = left_files + 1
-        If Downloads_URLS.Count > 0 Then
-            Downloads_URLS.RemoveAt(0)
-            Downloads_DownloadFiles.RemoveAt(0)
-            If Downloads_URLS.Count > 0 Then
-                akt_file = Path.GetFileName(Downloads_DownloadFiles(0))
+
+        If Downloads_DownloadFiles.Count > 0 Then
+            'Check File Size
+            Dim LocalFile As String = Downloads_DownloadFiles(0)
+            If My.Computer.FileSystem.GetFileInfo(LocalFile).Length = 0 And TryAgain = False Then 'FileSize = 0
+                TryAgain = True
+                Label_status.Text = "Download failed, waiting 5 Seconds for a retry."
+                Application.DoEvents()
+                System.Threading.Thread.Sleep(5000)
+                downloader.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)")
                 downloader.DownloadFileAsync(New Uri(Downloads_URLS(0)), Downloads_DownloadFiles(0), Stopwatch.StartNew)
+            Else
+                'Everything ok starting next download
+                TryAgain = False
+                left_files = left_files + 1
+                If Downloads_URLS.Count > 0 Then
+                    Downloads_URLS.RemoveAt(0)
+                    Downloads_DownloadFiles.RemoveAt(0)
+                    If Downloads_URLS.Count > 0 Then
+                        akt_file = Path.GetFileName(Downloads_DownloadFiles(0))
+                        downloader.Headers.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)")
+                        downloader.DownloadFileAsync(New Uri(Downloads_URLS(0)), Downloads_DownloadFiles(0), Stopwatch.StartNew)
+                    End If
+                End If
             End If
         End If
-
+        'download complete
         If Downloads_URLS.Count = 0 Then
             Label_status.Text = "Download complete"
             Button_Download.Text = "Download"
             Button_to_queue.Enabled = False
         End If
+
+
     End Sub
 
 
