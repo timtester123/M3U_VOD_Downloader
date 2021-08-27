@@ -5,5 +5,5 @@ Download VODs from your IPTV M3U File.
 
 
 ### Website / Contact / HowTo / Screenshots
-### [TimTester.in](https://timtester.in/programs/m3u-vod-downloader/)
+### [iptv-oscam-shop.com](https://iptv-oscam-shop.com/index.php/m3u-vod-downloader/)
 
