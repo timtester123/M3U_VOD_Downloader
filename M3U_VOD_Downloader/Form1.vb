@@ -118,7 +118,7 @@ Public Class Form1
                     Dim URL As String = ""
 
                     'Name
-                    NAME = get_Field(line1, "tvg-name=")
+                    NAME = get_Field(line1, "tvg-name=") & " " & get_Field(line1, "group-title=")
                     'URL
                     URL = line2.Replace(vbCrLf, "").Replace(vbCr, "")
 

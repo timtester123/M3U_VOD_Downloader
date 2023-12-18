@@ -34,7 +34,7 @@ Module update
                 Dim GitHub_version_check As Integer = GitHub_version.Replace(".", "")
                 Dim local_version_check As Integer = local_version.Replace(".", "")
                 If GitHub_version_check > local_version_check Then 'new Version
-                    If MessageBox.Show("An Update is available would you like to update to version: " & GitHub_version & " ?", "Update?", MessageBoxButtons.YesNo) = Windows.Forms.DialogResult.Yes Then
+                    If MessageBox.Show("An Update is available would you like to update to version: " & GitHub_version & " ?", "Update?", MessageBoxButtons.YesNo) = System.Windows.Forms.DialogResult.Yes Then
                         download_update()
                     Else
                         Exit Sub
